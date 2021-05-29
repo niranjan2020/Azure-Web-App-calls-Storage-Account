@@ -154,7 +154,7 @@ If clients wants to only read blobs then we can set permission to only Read. Usi
 To solve all of the above problems we can make use of Managed Identities. there are two types of Managed identities available. 
 1. System Assigned Managed identity 2. User Assigned Managed Identity. We will see how system assigned managed identity works with example.
 
-## System Assigned 
+## System Assigned Managed Identity
 System assigned managed identities provides a mechanisam for the service in our case Azure App Service to have identity in active directory. Once identity is created in azure active directory we can use this grant access to the target resources which is azure storage account in our case. It is also service principal but this is special kind of service principal. There are benifits compared to service principal.
 
 1.  We do not have to expiry about service principal - Automatic credential rotation
@@ -191,4 +191,7 @@ In Role, select Storage Blob Data Contributor to give your web app access to rea
 When the above code deployed to our app service, this code will run and lists the blobs without passing any credentials and secretes. 
 
 The DefaultAzureCredential class is used to get a token credential for your code to authorize requests to Azure Storage. Create an instance of the DefaultAzureCredential class, which uses the managed identity to fetch tokens and attach them to the service client. 
+
+## User Managed Identity ##
+For example, When we have multiple app services which is required to access storage accounts then It is very difficult to manage or create managed identities for each app service plans. But with the help of User Assigned Managed Identity we can manually create Identity and which can be assigned to all app services. 
 
