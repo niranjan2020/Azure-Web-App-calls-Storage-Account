@@ -106,7 +106,7 @@ In the above code azurestorageaccountconnstring should be same as secrete name y
 
 In this method we have kept our connection string in more secured manner in key vault and we have not checked in connection string into source code. 
 
-## But what is the problem? ##
+## Problem with KeyVault ##
 
 1. To access KeyVault again we ended up with managing other secretes in our appsettings.json. For example, ClientId, Secrete etc.
 2. Other importent thing is whenever we use full connection string in our code, that means we will be giving full admin control over azure storage account. 
@@ -144,7 +144,7 @@ We can grant limited access to Azure Storage resources using shared access signa
 In the above code, I have created policy which has Read,Write and Create permission to Container and we have set Expiration time to one day.
 If clients wants to only read blobs then we can set permission to only Read. Using SAS we can have more granular access to our storage accounts.
 
-## But what is the problem? ##
+## Problem with SAS ##
 1. To generate Shared Access token still we need to have storage account connection string that means even if we use keyvault but we will end up with storing other configs in code.
 2.  If a SAS is leaked, it can be used by anyone who obtains it, which can potentially compromise your storage account.
 3.  If a SAS provided to a client application expires and the application is unable to retrieve a new SAS from your service, then the application's functionality may be disturbed.
