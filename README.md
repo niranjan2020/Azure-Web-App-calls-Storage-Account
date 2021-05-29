@@ -45,7 +45,7 @@ Next we will store value in KeyVault.
 
 Go to KeyVault and Create one if not available
 
-Go to Secretes and click on Generate/Import. Add sample key and pass Azure Storage Account Connection string and save it.
+Go to Secretes and click on Generate/Import. Add sample key For Example azurestorageaccountconnstring and pass Azure Storage Account Connection string and save it.
 
 Go to Access Policy and click on Add Access Policy
 
@@ -55,7 +55,62 @@ Key Permisions - GET
 Secrete Permissions - GET,LIST
 Select Principal - Search your azure ad App with name and click on Add.
 
+now Lets see how we can integrate with our .Net Core App
 
+Add below configuration in your AppSettings.json
+
+```
+ "KeyVault": {
+    "Vault": "", //Name of your app registred in Azure AD
+    "ClientId": "", //Client/Application ID of you app registred in Azure AD
+    "ClientSecret": "" //Secrete Key of you app registred in Azure AD
+  }
+
+```
+
+Modify Program.cs file
+```
+public static IHostBuilder CreateHostBuilder(string[] args) =>
+           Host.CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration((context, config) =>
+            {
+
+                var root = config.Build();
+                config.AddAzureKeyVault($"https://{root["KeyVault:Vault"]}.vault.azure.net/", root["KeyVault:ClientId"], root["KeyVault:ClientSecret"]);
+            })
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+            });
+```
+
+Add one method to read blob names in your controller
+```
+[HttpGet]
+        [Route("getblobsfromkeyvault")]
+        public async Task<IEnumerable<string>> GetBlobsFromKeyVaultAsync()
+        {
+            List<string> blobs = new List<string>();
+            BlobServiceClient blobServiceClient = new BlobServiceClient(_configuration["azurestorageaccountconnstring"]);
+            BlobContainerClient containerClient = new BlobContainerClient(_configuration["azurestorageaccountconnstring"], ContainerName);
+            await foreach (BlobItem blobItem in containerClient.GetBlobsAsync())
+            {
+                Console.WriteLine("\t" + blobItem.Name);
+                blobs.Add(blobItem.Name);
+            }
+            return blobs;
+        }
+```
+
+In the above code azurestorageaccountconnstring should be same as secrete name you have added in the Azure Key Vault.
+
+In this method we have kept our connection string in more secured manner in key vault and we have not checked in connection string into source code. 
+
+## But what is the problem? ##
+
+1. To access KeyVault again we ended up with managing other secretes in our appsettings.json. For example, ClientId, Secrete etc.
+2. Other importent thing is whenever we use full connection string in our code, that means we will be giving full admin control over azure storage account. 
+3. If someone goes to azure storage account and regenrates key then this key will invalidate and existing connection string stored in KeyVault will not work anymore. We have to again manually add the new connection string in keyvault.
 
 
 
