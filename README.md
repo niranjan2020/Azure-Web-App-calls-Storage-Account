@@ -1,4 +1,4 @@
-# Azure App Service calls storage account
+# Azure App Service calls storage account (Best Practices)
 
 ## Scenario ##
 
