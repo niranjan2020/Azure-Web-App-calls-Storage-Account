@@ -113,4 +113,43 @@ In this method we have kept our connection string in more secured manner in key 
 3. If someone goes to azure storage account and regenrates key then this key will invalidate and existing connection string stored in KeyVault will not work anymore. We have to again manually add the new connection string in keyvault.
 
 
+## 3. Using Shared Access Signature ##
+We can grant limited access to Azure Storage resources using shared access signatures. A shared access signature is a signed URI that points to one or more storage resources. The URI includes a token that contains a special set of query parameters. The token indicates how the resources may be accessed by the client. This is most commonly used whenever you want to give access to your clients to give limited access to your storage account. Using SAS token clients can intereact with Storage Accounts based on the permissions given to SAS. Example,
+```
+        [HttpGet]
+        [Route("getblobsusingsastoken")]
+        public async Task<string> GetBlobsUsingSAStokenAsync(string storedPolicyName = null)
+        {
+            string sasBlobToken;
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(_configuration["azure204storageaccountconnstring"]);
+
+            CloudBlobClient serviceClient = storageAccount.CreateCloudBlobClient();
+
+            CloudBlobContainer container = serviceClient.GetContainerReference($"{ContainerName}");
+
+            CloudBlockBlob blob = container.GetBlockBlobReference(BlobName);
+
+           
+                SharedAccessBlobPolicy adHocSAS = new SharedAccessBlobPolicy()
+                {
+                    SharedAccessExpiryTime = DateTime.UtcNow.AddHours(24),
+                    Permissions = SharedAccessBlobPermissions.Read | SharedAccessBlobPermissions.Write | SharedAccessBlobPermissions.Create
+                };
+                sasBlobToken = blob.GetSharedAccessSignature(adHocSAS);
+           
+            return blob.Uri + sasBlobToken;
+        }
+
+```
+In the above code, I have created policy which has Read,Write and Create permission to Container and we have set Expiration time to one day.
+If clients wants to only read blobs then we can set permission to only Read. Using SAS we can have more granular access to our storage accounts.
+
+## But what is the problem? ##
+1. To generate Shared Access token still we need to have storage account connection string that means even if we use keyvault but we will end up with storing other configs in code.
+2.  If a SAS is leaked, it can be used by anyone who obtains it, which can potentially compromise your storage account.
+3.  If a SAS provided to a client application expires and the application is unable to retrieve a new SAS from your service, then the application's functionality may be disturbed.
+4.  We do have option to invalidate the SAS token in any way because SAS token is not tracked by Azure Storage in any way.
+
+## how to Solve the Problem ##
+
 
