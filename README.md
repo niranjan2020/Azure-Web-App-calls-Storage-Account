@@ -186,5 +186,7 @@ In Role, select Storage Blob Data Contributor to give your web app access to rea
             return blobs;
         }
 ```
+When the above code deployed to our app service, this code will run and lists the blobs without passing any credentials and secretes. 
 
+The DefaultAzureCredential class is used to get a token credential for your code to authorize requests to Azure Storage. Create an instance of the DefaultAzureCredential class, which uses the managed identity to fetch tokens and attach them to the service client. 
 
