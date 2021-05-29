@@ -151,8 +151,10 @@ If clients wants to only read blobs then we can set permission to only Read. Usi
 4.  We do have option to invalidate the SAS token in any way because SAS token is not tracked by Azure Storage in any way.
 
 ## how to Solve the Problem ##
-To solve all of the above problems we can make use of Managed Identities. there are two types of Managed identities available. 1. System Assigned Managed identity 2. User Assigned Managed Identity. We will see how system assigned managed identity works with example.
+To solve all of the above problems we can make use of Managed Identities. there are two types of Managed identities available. 
+1. System Assigned Managed identity 2. User Assigned Managed Identity. We will see how system assigned managed identity works with example.
 
+## System Assigned 
 System assigned managed identities provides a mechanisam for the service in our case Azure App Service to have identity in active directory. Once identity is created in azure active directory we can use this grant access to the target resources which is azure storage account in our case. It is also service principal but this is special kind of service principal. There are benifits compared to service principal.
 
 1.  We do not have to expiry about service principal - Automatic credential rotation
