@@ -23,7 +23,7 @@ namespace BlobProjectWithConnString.Controllers
         {
             _configuration = configuration;
         }
-        private static string ConnectionString = "";
+        private static string ConnectionString = "DefaultEndpointsProtocol=https;AccountName=azure204;AccountKey=rt3Kkt2SuK9QUrsPDvdbuEi74zipm2h6L2lsqKmG9sTnryU3z6ClgS5QaEnh49OS2vI0IFANiBJEjAKxuxlJJw==;EndpointSuffix=core.windows.net";
         private static string ContainerName = "azure204container";
         private static string AccountName = "azure204";
         private static string BlobName = "ERA5_MesquiteSky.txt";
@@ -50,7 +50,7 @@ namespace BlobProjectWithConnString.Controllers
         {
             List<string> blobs = new List<string>();
             BlobServiceClient blobServiceClient = new BlobServiceClient(_configuration["azure204storageaccountconnstring"]);
-            BlobContainerClient containerClient = new BlobContainerClient(ConnectionString, ContainerName);
+            BlobContainerClient containerClient = new BlobContainerClient(_configuration["azure204storageaccountconnstring"], ContainerName);
             await foreach (BlobItem blobItem in containerClient.GetBlobsAsync())
             {
                 Console.WriteLine("\t" + blobItem.Name);
